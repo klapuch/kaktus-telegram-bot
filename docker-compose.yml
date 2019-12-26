@@ -1,0 +1,29 @@
+version: '3'
+networks:
+  ktb:
+    external: true
+
+volumes:
+  ktb-postgres:
+    external: true
+
+services:
+  postgres:
+    container_name: ktb-postgres
+    working_dir: /usr/local/ktb
+    image: postgres:12-alpine
+    env_file: docker/.env.local
+    volumes:
+      - ./:/usr/local/ktb
+    ports:
+      - 5433:5432
+    networks:
+      - ktb
+
+  clojure:
+    build: docker/clojure
+    working_dir: /usr/local/ktb
+    volumes:
+      - ./:/usr/local/ktb
+    networks:
+      - ktb
