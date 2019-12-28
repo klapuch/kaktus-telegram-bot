@@ -1,7 +1,4 @@
-{:db {:dbtype "postgresql"
-      :dbname "ktb"
-      :host "ktb-postgres"
-      :user "ktb"
-      :password "ktb"}
- :telegram {:token "YOUR:TOKEN"}
+{
+ :store {:filename "/home/dom/.local/ktb/sections"}
+ :telegram {:token "YOUR_TOKEN"}
 }
