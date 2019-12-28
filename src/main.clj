@@ -60,9 +60,10 @@
   (str/split (slurp KAKTUS_SUBSCRIBERS_FILENAME) #"\n"))
 
 (spit KAKTUS_SUBSCRIBERS_FILENAME (str/join "\n" (filter some? (nth(data/diff new-subscriber-ids current-subscriber-ids) 0))))
-(def subscriber-ids (distinct (into new-subscriber-ids current-subscriber-ids)))
+(def subscriber-ids (distinct (map str (concat new-subscriber-ids current-subscriber-ids))))
 
-(defn send-hook! []
+(defn send-hook!
+  []
   (doseq [chat_id subscriber-ids]
     (client/post
      (with-telegram-token "sendMessage")
