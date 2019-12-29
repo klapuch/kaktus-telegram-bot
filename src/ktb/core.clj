@@ -48,7 +48,9 @@
   (def kaktus-page (get-body KAKTUS_URL))
   (def kaktus-section (.html (.select (.body (get-parsed-body kaktus-page)) KAKTUS_SELECTOR)))
 
-  (defn unify-section [section] (digest/md5 (str/trim section)))
+  (defn unify-section
+    [section]
+    (digest/md5 (str/trim section)))
 
   (def last-section (slurp KAKTUS_SECTION_FILENAME))
   (spit KAKTUS_SECTION_FILENAME kaktus-section)
@@ -77,5 +79,4 @@
 
   (if-not
    (= 0 (compare (unify-section last-section) (unify-section kaktus-section)))
-   (send-hook! subscriber-ids))
-  )
+   (send-hook! subscriber-ids)))
