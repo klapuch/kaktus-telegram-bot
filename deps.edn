@@ -1,6 +1,0 @@
-{:deps {
-    clj-http {:mvn/version "3.10.0"}
-    org.jsoup/jsoup {:mvn/version "1.12.1"}
-    digest {:mvn/version "1.4.9"}
-    cheshire {:mvn/version "5.9.0"}
-}}

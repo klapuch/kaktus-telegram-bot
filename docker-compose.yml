@@ -5,7 +5,8 @@ networks:
 
 services:
   clojure:
-    build: docker/clojure
+    image: clojure:lein
+    command: lein run
     working_dir: /usr/local/ktb
     volumes:
       - ./:/usr/local/ktb

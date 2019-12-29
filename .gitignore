@@ -1,2 +1,12 @@
-clojure-*.edn
-.cpcache
+/target
+/classes
+/checkouts
+profiles.clj
+pom.xml
+pom.xml.asc
+*.jar
+*.class
+/.lein-repl-history
+/.nrepl-port
+.hgignore
+.hg/
