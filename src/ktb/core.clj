@@ -17,7 +17,7 @@
     (if-not (.exists (io/file filename))
             (do
               (io/make-parents filename)
-              (spit filename "")))
+              (spit filename "" :append true))) ; file may exists
     filename)
 
   (defn with-store-directory
