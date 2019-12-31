@@ -22,7 +22,7 @@
 
   (defn with-store-directory
     [path]
-    (format "%s/%s" (get (get config :store) :filename) path))
+    (format "%s/%s" (:filename (:store config)) path))
 
   (def KAKTUS_SECTION_FILENAME
     (let [filename (with-store-directory "bonuses")]
@@ -37,12 +37,12 @@
   (defn with-telegram-token
     [path]
     (let [telegram_url "https://api.telegram.org"]
-      (format "%s/bot%s/%s" telegram_url (get (get config :telegram) :token) path)))
+      (format "%s/bot%s/%s" telegram_url (:token (:telegram config)) path)))
 
   (def KAKTUS_URL "https://www.mujkaktus.cz/homepage")
   (def KAKTUS_SELECTOR ".box-bubble > * > .journal-content-article:nth-of-type(2) > * > p:not(:empty):nth-of-type(2)")
 
-  (defn get-body [url] (get (client/get url) :body))
+  (defn get-body [url] (:body (client/get url)))
   (defn get-parsed-body [body] (Jsoup/parse body))
 
   (def kaktus-page (get-body KAKTUS_URL))
@@ -56,17 +56,19 @@
   (spit KAKTUS_SECTION_FILENAME kaktus-section)
 
   (def new-subscriber-ids
-    (let [updates (get (client/get (with-telegram-token "getUpdates")) :body)]
-      (map (fn [result] (get (get (get result :message) :from) :id))
-           (filter (fn [result] (= "/start" (str/trim (get (get result :message) :text))))
-                   (get (json/parse-string updates true) :result)))))
+    (let [updates (:body (client/get (with-telegram-token "getUpdates")))]
+      (map #(:id (:from (:message %1)))
+        (filter #(= "/start" (str/trim (:text (:message %1))))
+          (:result (json/parse-string updates true))))))
 
   (def current-subscriber-ids
     (str/split (slurp KAKTUS_SUBSCRIBERS_FILENAME) #"\n"))
 
   (spit KAKTUS_SUBSCRIBERS_FILENAME
-        (str/join "\n"
-                  (filter some? (nth (data/diff new-subscriber-ids current-subscriber-ids) 0))))
+    (str/join "\n"
+      (let [[new-subscribers] (data/diff new-subscriber-ids current-subscriber-ids)]
+        (not-empty new-subscribers))))
+
   (def subscriber-ids
     (distinct (map str (concat new-subscriber-ids current-subscriber-ids))))
 
