@@ -57,20 +57,21 @@
 
   (def new-subscriber-ids
     (let [updates (:body (client/get (with-telegram-token "getUpdates")))]
-      (map #(:id (:from (:message %1)))
-        (filter #(= "/start" (str/trim (:text (:message %1))))
-          (:result (json/parse-string updates true))))))
+      (->> (:result (json/parse-string updates true))
+           (filter #(= "/start" (str/trim (:text (:message %1)))))
+           (map #(:id (:from (:message %1))))
+           (map #(Integer. %1))
+      )))
 
   (def current-subscriber-ids
-    (str/split (slurp KAKTUS_SUBSCRIBERS_FILENAME) #"\n"))
+    (->> (str/split (slurp KAKTUS_SUBSCRIBERS_FILENAME) #"\n")
+         (filter (complement str/blank?))
+         (map #(Integer. %1))
+    ))
 
-  (spit KAKTUS_SUBSCRIBERS_FILENAME
-    (str/join "\n"
-      (let [[new-subscribers] (data/diff new-subscriber-ids current-subscriber-ids)]
-        (not-empty new-subscribers))))
+  (def subscriber-ids (distinct (concat new-subscriber-ids current-subscriber-ids)))
 
-  (def subscriber-ids
-    (distinct (map str (concat new-subscriber-ids current-subscriber-ids))))
+  (spit KAKTUS_SUBSCRIBERS_FILENAME (str/join "\n" subscriber-ids))
 
   (defn send-hook!
     [subscribers]
