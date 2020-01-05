@@ -81,5 +81,5 @@
        {:query-params {:chat_id chat_id :text kaktus-section}})))
 
   (if-not
-   (= 0 (compare (unify-section last-section) (unify-section kaktus-section)))
+   (= (unify-section last-section) (unify-section kaktus-section))
    (send-hook! subscriber-ids)))
