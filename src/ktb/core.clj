@@ -74,12 +74,12 @@
   (spit KAKTUS_SUBSCRIBERS_FILENAME (str/join "\n" subscriber-ids))
 
   (defn send-hook!
-    [subscribers]
+    [subscribers, text]
     (doseq [chat_id subscribers]
       (client/post
        (with-telegram-token "sendMessage")
-       {:query-params {:chat_id chat_id :text kaktus-section}})))
+       {:query-params {:chat_id chat_id :text text}})))
 
   (if-not
    (= (unify-section last-section) (unify-section kaktus-section))
-   (send-hook! subscriber-ids)))
+   (send-hook! subscriber-ids kaktus-section)))
